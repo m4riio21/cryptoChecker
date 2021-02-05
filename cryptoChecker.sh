@@ -22,39 +22,74 @@ function ctrl_c(){
 
 #Global variables (prices)
 function updateValues(){
-ETH_eur_price=$(curl -s "https://ethereumprice.org/eth-eur/" | html2text | grep "Current Price" -A 1 | head -2 | tail -1)
+
+ETH_eur_price=$(curl -s "https://ethereumprice.org/eth-eur/" | html2text | grep "Current Price" -A 1 | head -2 | tail -1 | tr -d '€')
 ETH_usd_price=$(curl -s "https://finance.yahoo.com/quote/ETH-USD/" | html2text | grep "As of" -B 1 | head -1 | awk -F'+' '{print $1}')
+ETH_new=$(curl -s "https://ethereumprice.org/eth-eur/" | html2text | grep "Current Price" -A 1 | head -2 | tail -1 | tr -d '€' | tr -d ',' | bc)
+
 BTC_eur_price=$(curl -s "https://www.coingecko.com/es/monedas/bitcoin/eur" | html2text | grep "Bitcoin (BTC)" -A 1 | tail -1 | tr 'â¬' ' ' | awk -F' ' '{print $2}' | tr '.' ',')
 BTC_usd_price=$(curl -s "https://www.coindesk.com/price/bitcoin" | html2text | grep "24 Hour % Change" -B 1 | head -1 | tr -d '$')
+BTC_new=$(curl -s "https://www.coingecko.com/es/monedas/bitcoin/eur" | html2text | grep "Bitcoin (BTC)" -A 1 | tail -1 | tr 'â¬' ' ' | awk -F' ' '{print $2}' | tr '.' ',' | tr -d ',' | bc)
+
 XRP_usd_price=$(curl -s "https://www.coindesk.com/price/xrp" | html2text | grep -w "Price" -A 1 | tail -1 | tr -d '$')
 XRP_eur_price=$(curl -s "https://www.coingecko.com/es/monedas/xrp/eur" | html2text | grep "XRP (XRP)" -A 1 | tail -1 | tr '¬' ' ' | awk -F' ' '{print $3}' | tr ',' '.')
+XRP_new=$(curl -s "https://www.coingecko.com/es/monedas/xrp/eur" | html2text | grep "XRP (XRP)" -A 1 | tail -1 | tr '¬' ' ' | awk -F' ' '{print $3}' | tr ',' '.' | bc)
+
+
 LTC_usd_price=$(curl -s "https://www.coindesk.com/price/litecoin" | html2text | grep -w "Price" -A 1 | tail -1 | tr -d '$')
 LTC_eur_price=$(curl -s "https://www.coingecko.com/es/monedas/litecoin/eur" | html2text | grep "Litecoin (LTC)" -A 1 | tail -1 | tr '¬' ' ' | awk -F' ' '{print $3}' | tr ',' '.')
+LTC_new=$(curl -s "https://www.coingecko.com/es/monedas/litecoin/eur" | html2text | grep "Litecoin (LTC)" -A 1 | tail -1 | tr '¬' ' ' | awk -F' ' '{print $3}' | tr ',' '.' | bc)
 }
 
+function price_color(){
+	new="$1"
+	actual="$2"
+	if [ `echo "$new < $actual" | bc` -eq 1 ]; then
+			echo "$red"
+		elif [ `echo "$new > $actual" | bc` -eq 1 ]; then
+			echo "$green"
+	fi
+}
 
 function showAll(){
 	bucle=0
+	
+	#INICIALIZACION CRIPTOS PRIMERA VEZ
+	BTC_actual=0; ETH_actual=0; XRP_actual=0; LTC_actual=0
+
 	while [ $bucle -eq 0 ]; do
 		updateValues
+
 		hora=$(date +"%x %T")
 		clear
 		echo -e "${red}----------------cryptoChecker (v1.2)---------------${end}"
 
-		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} BTC ${end}${gray}es de ${end}${green}$BTC_eur_price€ / $BTC_usd_price$ ${end}"
 
-		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} ETH ${end}${gray}es de ${end}${green}$ETH_eur_price€ / $ETH_usd_price$ ${end}"
+		#echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} BTC ${end}${gray}es de ${end}${price_color $BTC_new $BTC_actual}$BTC_eur_price€ / $BTC_usd_price$ ${end}"
+		#BTC_actual=$new
 
-		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} XRP ${end}${gray}es de ${end}${green}$XRP_eur_price€ / $XRP_usd_price$ ${end}"
+		color_aux=$(price_color $ETH_new $ETH_actual)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} ETH ${end}${gray}es de ${end}${color_aux}$ETH_eur_price€ / $ETH_usd_price$ ${end}"
+		ETH_actual=$ETH_new
 
-		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} LTC ${end}${gray}es de ${end}${green}$LTC_eur_price€ / $LTC_usd_price$ ${end}"
+
+		#echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} XRP ${end}${gray}es de ${end}${price_color $XRP_new $XRP_actual}$XRP_eur_price€ / $XRP_usd_price$ ${end}"
+		#XRP_actual=$new
+
+
+		#echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} LTC ${end}${gray}es de ${end}${price_color $LTC_new $LTC_actual}$LTC_eur_price€ / $LTC_usd_price$ ${end}"
+		#LTC_actual=$new
+
+
+		#CLOCK
 		echo -e "\n\t\t${turquoise}._______________________.${end}"
 		echo -ne "\t\t${turquoise}|\t\t\t|${end}"
 		echo -ne "\n\t\t${turquoise}| Hora de actualizacion |${end}"
 		echo -e "\n\t\t${turquoise}|${end}${gray}  $hora${end}${turquoise}\t|${end}"
 		echo -e "\t\t${turquoise}|\t\t\t|${end}"
 		echo -ne "\t\t${turquoise}·-----------------------·${end}"
-
+		
+		
 
     done
 }
