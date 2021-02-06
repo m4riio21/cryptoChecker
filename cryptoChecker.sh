@@ -41,6 +41,7 @@ LTC_eur_price=$(curl -s "https://www.coingecko.com/es/monedas/litecoin/eur" | ht
 LTC_new=$(curl -s "https://www.coingecko.com/es/monedas/litecoin/eur" | html2text | grep "Litecoin (LTC)" -A 1 | tail -1 | tr '¬' ' ' | awk -F' ' '{print $3}' | tr ',' '.')
 }
 
+#check values to select price color
 function price_color(){
 	new="$1"
 	actual="$2"
