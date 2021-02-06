@@ -25,29 +25,33 @@ function updateValues(){
 
 ETH_eur_price=$(curl -s "https://ethereumprice.org/eth-eur/" | html2text | grep "Current Price" -A 1 | head -2 | tail -1 | tr -d '€')
 ETH_usd_price=$(curl -s "https://finance.yahoo.com/quote/ETH-USD/" | html2text | grep "As of" -B 1 | head -1 | awk -F'+' '{print $1}')
-ETH_new=$(curl -s "https://ethereumprice.org/eth-eur/" | html2text | grep "Current Price" -A 1 | head -2 | tail -1 | tr -d '€' | tr -d ',' | bc)
+ETH_new=$(curl -s "https://ethereumprice.org/eth-eur/" | html2text | grep "Current Price" -A 1 | head -2 | tail -1 | tr -d '€' | tr -d ',')
 
 BTC_eur_price=$(curl -s "https://www.coingecko.com/es/monedas/bitcoin/eur" | html2text | grep "Bitcoin (BTC)" -A 1 | tail -1 | tr 'â¬' ' ' | awk -F' ' '{print $2}' | tr '.' ',')
 BTC_usd_price=$(curl -s "https://www.coindesk.com/price/bitcoin" | html2text | grep "24 Hour % Change" -B 1 | head -1 | tr -d '$')
-BTC_new=$(curl -s "https://www.coingecko.com/es/monedas/bitcoin/eur" | html2text | grep "Bitcoin (BTC)" -A 1 | tail -1 | tr 'â¬' ' ' | awk -F' ' '{print $2}' | tr '.' ',' | tr -d ',' | bc)
+BTC_new=$(curl -s "https://www.coingecko.com/es/monedas/bitcoin/eur" | html2text | grep "Bitcoin (BTC)" -A 1 | tail -1 | tr 'â¬' ' ' | awk -F' ' '{print $2}' | tr '.' ',' | tr -d ',')
 
 XRP_usd_price=$(curl -s "https://www.coindesk.com/price/xrp" | html2text | grep -w "Price" -A 1 | tail -1 | tr -d '$')
 XRP_eur_price=$(curl -s "https://www.coingecko.com/es/monedas/xrp/eur" | html2text | grep "XRP (XRP)" -A 1 | tail -1 | tr '¬' ' ' | awk -F' ' '{print $3}' | tr ',' '.')
-XRP_new=$(curl -s "https://www.coingecko.com/es/monedas/xrp/eur" | html2text | grep "XRP (XRP)" -A 1 | tail -1 | tr '¬' ' ' | awk -F' ' '{print $3}' | tr ',' '.' | bc)
+XRP_new=$(curl -s "https://www.coingecko.com/es/monedas/xrp/eur" | html2text | grep "XRP (XRP)" -A 1 | tail -1 | tr '¬' ' ' | awk -F' ' '{print $3}' | tr ',' '.')
 
 
 LTC_usd_price=$(curl -s "https://www.coindesk.com/price/litecoin" | html2text | grep -w "Price" -A 1 | tail -1 | tr -d '$')
 LTC_eur_price=$(curl -s "https://www.coingecko.com/es/monedas/litecoin/eur" | html2text | grep "Litecoin (LTC)" -A 1 | tail -1 | tr '¬' ' ' | awk -F' ' '{print $3}' | tr ',' '.')
-LTC_new=$(curl -s "https://www.coingecko.com/es/monedas/litecoin/eur" | html2text | grep "Litecoin (LTC)" -A 1 | tail -1 | tr '¬' ' ' | awk -F' ' '{print $3}' | tr ',' '.' | bc)
+LTC_new=$(curl -s "https://www.coingecko.com/es/monedas/litecoin/eur" | html2text | grep "Litecoin (LTC)" -A 1 | tail -1 | tr '¬' ' ' | awk -F' ' '{print $3}' | tr ',' '.')
 }
 
 function price_color(){
 	new="$1"
 	actual="$2"
-	if [ `echo "$new < $actual" | bc` -eq 1 ]; then
-			echo "$red"
-		elif [ `echo "$new > $actual" | bc` -eq 1 ]; then
+	if [ -z $new ] || [ -z $actual ]; then echo "$gray"
+	else
+		if [ `echo "$new < $actual" | bc` -eq "1" ]; then
+				echo "$red"
+		elif [ `echo "$new > $actual" | bc` -eq "1" ]; then
 			echo "$green"
+		else echo "$gray"
+		fi
 	fi
 }
 
@@ -55,7 +59,7 @@ function showAll(){
 	bucle=0
 	
 	#INICIALIZACION CRIPTOS PRIMERA VEZ
-	BTC_actual=0; ETH_actual=0; XRP_actual=0; LTC_actual=0
+	BTC_actual=$BTC_new; ETH_actual=$ETH_new; XRP_actual=$XRP_new; LTC_actual=$LTC_new
 
 	while [ $bucle -eq 0 ]; do
 		updateValues
@@ -64,21 +68,25 @@ function showAll(){
 		clear
 		echo -e "${red}----------------cryptoChecker (v1.2)---------------${end}"
 
+		nuevo_aux=`echo "$BTC_new"`
+		color_aux=$(price_color $nuevo_aux $BTC_actual)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} BTC ${end}${gray}es de ${end}${color_aux}$BTC_eur_price€ / $BTC_usd_price$ ${end}"
+		BTC_actual=$nuevo_aux
 
-		#echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} BTC ${end}${gray}es de ${end}${price_color $BTC_new $BTC_actual}$BTC_eur_price€ / $BTC_usd_price$ ${end}"
-		#BTC_actual=$new
+		nuevo_aux=`echo "$ETH_new"`
+		color_aux=$(price_color $nuevo_aux $ETH_actual)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} ETH ${end}${gray}es de ${end}${color_aux}$nuevo_aux€ / $ETH_usd_price$ ${end}"
+		ETH_actual=$nuevo_aux
 
-		color_aux=$(price_color $ETH_new $ETH_actual)
-		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} ETH ${end}${gray}es de ${end}${color_aux}$ETH_eur_price€ / $ETH_usd_price$ ${end}"
-		ETH_actual=$ETH_new
+		nuevo_aux=`echo "$XRP_new"`
+		color_aux=$(price_color $nuevo_aux $XRP_actual)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} XRP ${end}${gray}es de ${end}${color_aux}$XRP_eur_price€ / $XRP_usd_price$ ${end}"
+		XRP_actual=$new
 
-
-		#echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} XRP ${end}${gray}es de ${end}${price_color $XRP_new $XRP_actual}$XRP_eur_price€ / $XRP_usd_price$ ${end}"
-		#XRP_actual=$new
-
-
-		#echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} LTC ${end}${gray}es de ${end}${price_color $LTC_new $LTC_actual}$LTC_eur_price€ / $LTC_usd_price$ ${end}"
-		#LTC_actual=$new
+		nuevo_axu=`echo "$LTC_new"`
+		color_aux=$(price_color $nuevo_axu $LTC_actual)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} LTC ${end}${gray}es de ${end}${color_aux}$LTC_eur_price€ / $LTC_usd_price$ ${end}"
+		LTC_actual=$new
 
 
 		#CLOCK
