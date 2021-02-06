@@ -21,7 +21,7 @@ function ctrl_c(){
 }
 
 #Global variables (prices)
-ETH_eur_price=$(curl -s "https://ethereumprice.org/eth-eur/" | html2text | grep "Current Price" -A 1 | head -2 | tail -1)
+ETH_eur_price=$(curl -s "https://ethereumprice.org/eth-eur/" | html2text | grep "Current Price" -A 1 | head -2 | tail -1 | tr -d '€')
 ETH_usd_price=$(curl -s "https://finance.yahoo.com/quote/ETH-USD/" | html2text | grep "As of" -B 1 | head -1 | awk -F'+' '{print $1}')
 BTC_eur_price=$(curl -s "https://www.coingecko.com/es/monedas/bitcoin/eur" | html2text | grep "Bitcoin (BTC)" -A 1 | tail -1 | tr 'â¬' ' ' | awk -F' ' '{print $2}' | tr '.' ',')
 BTC_usd_price=$(curl -s "https://www.coindesk.com/price/bitcoin" | html2text | grep "24 Hour % Change" -B 1 | head -1 | tr -d '$')
@@ -61,6 +61,7 @@ function helpPanel(){
 
 function printLogo(){
 	clear
+	tput civis
 	echo -e "${red}----------------Bienvenido a cryptoChecker (v1.2)---------------${end}"
 	echo -e "${red}                       _         _____ _               _             ${end}"
 	sleep 0.18
@@ -81,17 +82,18 @@ function printLogo(){
 	echo -e "\n\t\t${blue}Programado por m4riio21 y polespinasa${end}"
 	sleep 0.5
 	echo -e "\n${blue} Pulsa una tecla para continuar..${end}"
-	tput civis
 	read -s -n 1 key
 	mainMenu
 }
 
 function inspectCrypto(){
 	clear
-	echo -e "${red}----------------cryptoChecker (v1.2)---------------${end}"
+	echo -e "${red}----------------cryptoChecker (v1.2)----------------${end}"
 	echo -e "\n${blue}Introduce las criptomonedas separadas por un espacio"
-	echo -e "${red}----------\n"
+	echo -e "${red}----------------------------------------------------\n"
 	echo -ne "\t" && read -p "" currs; echo -ne "${end}"
+	clear
+	echo -e "${red}----------------cryptoChecker (v1.2)----------------${end}"
 	for cur in $currs; do
     	echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} $cur ${end}${gray}es de ${end}${green}$(eval echo \$$cur'_eur_price')€ / $(eval echo \$$cur'_usd_price')$ ${end}"
 	done
@@ -132,7 +134,7 @@ function mainMenu(){
 	echo -e "\n${blue} 1. Comprobar el precio de una/s criptomoneda/s en concreto${end}"
 	echo -e "${blue} 2. Comprobar el precio de todas las criptomonedas soportadas actualmente ${end}\n"
 	echo -e "${red}----------${end}"
-	echo -e "${blue} 0. Acerca de${end}"
+	echo -e "\n${blue} 0. Acerca de${end}"
 	echo -e "${blue} S. Salir${end}"
 	echo -ne "\n\n${red}Opcion: ${end}${blue}" && read opcion
 	echo -e "${end}"
@@ -141,6 +143,7 @@ function mainMenu(){
 		1) inspectCrypto;;
 		2) showAll;;
 		S) ctrl_c;;
+		s) ctrl_c;;
 		*) error;;
 	esac
 }
