@@ -24,18 +24,20 @@ function ctrl_c(){
 
 function updateValues(){
 
-ETH_eur_price=$(curl -s "https://ethereumprice.org/eth-eur/" | html2text | grep "Current Price" -A 1 | head -2 | tail -1 | tr -d '€')
-ETH_usd_price=$(curl -s "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=ETH-USDT" | tr ':' ' ' | awk -F' ' '{print $6}' | tr -d '"' | tr ',' ' ' | awk '{print $1}')
+USD_price=$(curl -s "https://www.xe.com/currencyconverter/convert//?Amount/=1/&From/=EUR/&To/=USD%22%7C" | awk -F 'EUR / USD' '{printf substr($2,14,7);}')
 
-BTC_eur_price=$(curl -s "https://www.coingecko.com/es/monedas/bitcoin/eur" | html2text | grep "Bitcoin (BTC)" -A 1 | tail -1 | tr 'â¬' ' ' | awk -F' ' '{print $2}' | tr '.' ',')
+ETH_usd_price=$(curl -s "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=ETH-USDT" | tr ':' ' ' | awk -F' ' '{print $6}' | tr -d '"' | tr ',' ' ' | awk '{print $1}')
+ETH_eur_price=$(echo "scale=2 ; $ETH_usd_price / $USD_price" | bc)
+
 BTC_usd_price=$(curl -s "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=BTC-USDT" | tr ':' ' ' | awk -F' ' '{print $6}' | tr -d '"' | tr ',' ' ' | awk '{print $1}')
+BTC_eur_price=$(echo "scale=2 ; $BTC_usd_price / $USD_price" | bc)
 
 XRP_usd_price=$(curl -s "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=XRP-USDT" | tr ':' ' ' | awk -F' ' '{print $6}' | tr -d '"' | tr ',' ' ' | awk '{print $1}')
-XRP_eur_price=$(curl -s "https://www.coingecko.com/es/monedas/xrp/eur" | html2text | grep "XRP (XRP)" -A 1 | tail -1 | tr '¬' ' ' | awk -F' ' '{print $3}' | tr ',' '.')
+XRP_eur_price=$(echo "scale=5 ; $XRP_usd_price / $USD_price" | bc | awk '{printf "%.5f\n", $0}')
 
 
 LTC_usd_price=$(curl -s "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=LTC-USDT" | tr ':' ' ' | awk -F' ' '{print $6}' | tr -d '"' | tr ',' ' ' | awk '{print $1}')
-LTC_eur_price=$(curl -s "https://www.coingecko.com/es/monedas/litecoin/eur" | html2text | grep "Litecoin (LTC)" -A 1 | tail -1 | tr '¬' ' ' | awk -F' ' '{print $3}' | tr ',' '.')
+LTC_eur_price=$(echo "scale=2 ; $LTC_usd_price / $USD_price" | bc)
 }
 
 #check values to select price color
@@ -63,6 +65,18 @@ function arrow(){
 	fi
 }
 
+function percentageVariety(){
+	new="$1"
+	actual="$2"
+	positive="$3"
+	if [ "$positive" = "$green" ]; then
+		result="+$(echo "scale=5; 100*$new/$actual-100" | bc)"
+	elif [ "$positive" = "$red" ]; then
+		echo "-$(echo "scale=5; 100-$new*100/$actual" | bc)"
+	else echo "0"
+	fi
+}
+
 function showAll(){
 	bucle=0
 	
@@ -79,25 +93,29 @@ function showAll(){
 		nuevo_aux=`echo "$BTC_usd_price"`
 		color_aux=$(price_color $nuevo_aux $BTC_actual)
 		arrowForm=$(arrow $color_aux)
-		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} BTC ${end}${gray}es de ${end}${color_aux}$BTC_eur_price€ / $BTC_usd_price$ $arrowForm${end}"
+		percent_aux=$(percentageVariety nuevo_aux BTC_actual color_aux)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} BTC ${end}${gray}es de ${end}${color_aux}$BTC_eur_price€ / $BTC_usd_price$ $arrowForm ${percent_aux}%${end}"
 		BTC_actual=$nuevo_aux
 
 		nuevo_aux=`echo "$ETH_usd_price"`
 		color_aux=$(price_color $nuevo_aux $ETH_actual)
 		arrowForm=$(arrow $color_aux)
-		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} ETH ${end}${gray}es de ${end}${color_aux}$ETH_eur_price€ / $ETH_usd_price$ $arrowForm${end}"
+		percent_aux=$(percentageVariety nuevo_aux ETH_actual color_aux)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} ETH ${end}${gray}es de ${end}${color_aux}$ETH_eur_price€ / $ETH_usd_price$ $arrowForm ${percent_aux}%${end}"
 		ETH_actual=$nuevo_aux
 
 		nuevo_aux=`echo "$XRP_usd_price"`
 		color_aux=$(price_color $nuevo_aux $XRP_actual)
 		arrowForm=$(arrow $color_aux)
-		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} XRP ${end}${gray}es de ${end}${color_aux}$XRP_eur_price€ / $XRP_usd_price$ $arrowForm${end}"
+		percent_aux=$(percentageVariety nuevo_aux XRP_actual color_aux)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} XRP ${end}${gray}es de ${end}${color_aux}$XRP_eur_price€ / $XRP_usd_price$ $arrowForm ${percent_aux}%${end}"
 		XRP_actual=$nuevo_aux
 
 		nuevo_aux=`echo "$LTC_usd_price"`
 		color_aux=$(price_color $nuevo_aux $LTC_actual)
 		arrowForm=$(arrow $color_aux)
-		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} LTC ${end}${gray}es de ${end}${color_aux}$LTC_eur_price€ / $LTC_usd_price$ $arrowForm${end}"
+		percent_aux=$(percentageVariety nuevo_aux LTC_actual color_aux)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} LTC ${end}${gray}es de ${end}${color_aux}$LTC_eur_price€ / $LTC_usd_price$ $arrowForm ${percent_aux}%${end}"
 		LTC_actual=$nuevo_aux
 
 
