@@ -1,6 +1,6 @@
 #!/bin/bash
 #prueba
-# Crypto checker - DONE BY m4riio21
+# Crypto checker - DONE BY m4riio21 and polespinasa
 
 #Colours
 green="\e[0;32m\033[1m"
@@ -25,7 +25,7 @@ function ctrl_c(){
 function updateValues(){
 
 ETH_eur_price=$(curl -s "https://ethereumprice.org/eth-eur/" | html2text | grep "Current Price" -A 1 | head -2 | tail -1 | tr -d '€')
-ETH_usd_price=$(curl -s "https://finance.yahoo.com/quote/ETH-USD/" | html2text | grep "As of" -B 1 | head -1 | awk -F'+' '{print $1}')
+ETH_usd_price=$(curl -s "https://www.coindesk.com/price/ethereum" | html2text | grep -w "Price" -A 1 | grep -v "Price" | tr -d "$")
 ETH_new=$(curl -s "https://ethereumprice.org/eth-eur/" | html2text | grep "Current Price" -A 1 | head -2 | tail -1 | tr -d '€' | tr -d ',')
 
 BTC_eur_price=$(curl -s "https://www.coingecko.com/es/monedas/bitcoin/eur" | html2text | grep "Bitcoin (BTC)" -A 1 | tail -1 | tr 'â¬' ' ' | awk -F' ' '{print $2}' | tr '.' ',')
@@ -57,6 +57,16 @@ function price_color(){
 	fi
 }
 
+#chose up or down arrow
+function arrow(){
+	color="$1"
+	if [ "$color" = "$green" ]; then
+		echo "▲"
+	elif [ "$color" = "$red" ]; then
+		echo "▼"
+	fi
+}
+
 function showAll(){
 	bucle=0
 	
@@ -72,22 +82,26 @@ function showAll(){
 
 		nuevo_aux=`echo "$BTC_new"`
 		color_aux=$(price_color $nuevo_aux $BTC_actual)
-		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} BTC ${end}${gray}es de ${end}${color_aux}$BTC_eur_price€ / $BTC_usd_price$ ${end}"
+		arrowForm=$(arrow $color_aux)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} BTC ${end}${gray}es de ${end}${color_aux}$BTC_eur_price€ / $BTC_usd_price$ $arrowForm${end}"
 		BTC_actual=$nuevo_aux
 
 		nuevo_aux=`echo "$ETH_new"`
 		color_aux=$(price_color $nuevo_aux $ETH_actual)
-		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} ETH ${end}${gray}es de ${end}${color_aux}$nuevo_aux€ / $ETH_usd_price$ ${end}"
+		arrowForm=$(arrow $color_aux)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} ETH ${end}${gray}es de ${end}${color_aux}$nuevo_aux€ / $ETH_usd_price$ $arrowForm${end}"
 		ETH_actual=$nuevo_aux
 
 		nuevo_aux=`echo "$XRP_new"`
 		color_aux=$(price_color $nuevo_aux $XRP_actual)
-		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} XRP ${end}${gray}es de ${end}${color_aux}$XRP_eur_price€ / $XRP_usd_price$ ${end}"
+		arrowForm=$(arrow $color_aux)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} XRP ${end}${gray}es de ${end}${color_aux}$XRP_eur_price€ / $XRP_usd_price$ $arrowForm${end}"
 		XRP_actual=$new
 
 		nuevo_axu=`echo "$LTC_new"`
 		color_aux=$(price_color $nuevo_axu $LTC_actual)
-		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} LTC ${end}${gray}es de ${end}${color_aux}$LTC_eur_price€ / $LTC_usd_price$ ${end}"
+		arrowForm=$(arrow $color_aux)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} LTC ${end}${gray}es de ${end}${color_aux}$LTC_eur_price€ / $LTC_usd_price$ $arrowForm${end}"
 		LTC_actual=$new
 
 
