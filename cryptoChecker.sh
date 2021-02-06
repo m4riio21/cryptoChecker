@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#prueba
 # Crypto checker - DONE BY m4riio21
 
 #Colours
