@@ -17,8 +17,10 @@ trap ctrl_c INT
 function ctrl_c(){
 	clear
 	echo -e "\n${red}[!] Saliendo...\n${end}"
+	rm *.txt 2>/dev/null
 	tput cnorm; exit 1
 }
+
 
 #Global variables (prices)
 
@@ -38,6 +40,14 @@ XRP_eur_price=$(echo "scale=5 ; $XRP_usd_price / $USD_price" | bc | awk '{printf
 
 LTC_usd_price=$(curl -s "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=LTC-USDT" | tr ':' ' ' | awk -F' ' '{print $6}' | tr -d '"' | tr ',' ' ' | awk '{print $1}')
 LTC_eur_price=$(echo "scale=2 ; $LTC_usd_price / $USD_price" | bc)
+}
+
+function historicVales(){
+
+	curl -s "https://finance.yahoo.com/quote/BTC-USD/history/" | html2text | grep -w "Historical Prices" -A 205 | grep "^[A-Z]" | tail -100 | awk -F' ' '{print $6}' | tr -d ',' | xargs | tr ' ' ',' > BTC_history.txt
+	curl -s "https://finance.yahoo.com/quote/ETH-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs > ETH_history.txt
+	curl -s "https://finance.yahoo.com/quote/LTC-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs > LTC_history.txt
+	curl -s "https://finance.yahoo.com/quote/XRP-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs > XRP_history.txt
 }
 
 #check values to select price color
@@ -208,6 +218,7 @@ function error(){
 	mainMenu
 }
 
+#Main
 function mainMenu(){
 	clear
 	echo -e "${red}----------------cryptoChecker (v1.2)---------------${end}"
@@ -230,4 +241,5 @@ function mainMenu(){
 	esac
 }
 
+historicVales
 printLogo
