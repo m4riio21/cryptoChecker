@@ -22,6 +22,8 @@ function ctrl_c(){
 }
 
 
+
+
 #Global variables (prices)
 
 function updateValues(){
@@ -45,9 +47,9 @@ LTC_eur_price=$(echo "scale=2 ; $LTC_usd_price / $USD_price" | bc)
 function historicVales(){
 
 	curl -s "https://finance.yahoo.com/quote/BTC-USD/history/" | html2text | grep -w "Historical Prices" -A 205 | grep "^[A-Z]" | tail -100 | awk -F' ' '{print $6}' | tr -d ',' | xargs | tr ' ' ',' > BTC_history.txt
-	curl -s "https://finance.yahoo.com/quote/ETH-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs > ETH_history.txt
-	curl -s "https://finance.yahoo.com/quote/LTC-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs > LTC_history.txt
-	curl -s "https://finance.yahoo.com/quote/XRP-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs > XRP_history.txt
+	curl -s "https://finance.yahoo.com/quote/ETH-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' > ETH_history.txt
+	curl -s "https://finance.yahoo.com/quote/LTC-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' > LTC_history.txt
+	curl -s "https://finance.yahoo.com/quote/XRP-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' > XRP_history.txt
 }
 
 #check values to select price color
@@ -98,7 +100,7 @@ function showAll(){
 
 		hora=$(date +"%x %T")
 		clear
-		echo -e "${red}----------------cryptoChecker (v1.2)---------------${end}"
+		echo -e "${red}----------------cryptoChecker (v1.3)---------------${end}"
 
 		nuevo_aux=`echo "$BTC_usd_price"`
 		color_aux=$(price_color $nuevo_aux $BTC_actual)
@@ -128,7 +130,6 @@ function showAll(){
 		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} LTC ${end}${gray}es de ${end}${color_aux}$LTC_eur_price€ / $LTC_usd_price$ $arrowForm ${percent_aux}%${end}"
 		LTC_actual=$nuevo_aux
 
-
 		#CLOCK
 		echo -e "\n\t\t${turquoise}._______________________.${end}"
 		echo -ne "\t\t${turquoise}|\t\t\t|${end}"
@@ -142,10 +143,21 @@ function showAll(){
     done
 }
 
+
+function showGraph(){
+	clear
+	echo -e "${red}----------------cryptoChecker (v1.3)---------------${end}"
+	echo -e "\n\n\n\t\t ${red} SELECCIONA LA MONEDA PARA VISUALIZAR LA GRAFICA"
+	echo -e "\n\t\t ${turquoise} 1.BTC   2.ETH   3.XRP   4.LTC${end}"
+	read crypto
+	clear
+	python3 graph.py $crypto
+}
+
 function printLogo(){
 	clear
 	tput civis
-	echo -e "${red}----------------Bienvenido a cryptoChecker (v1.2)---------------${end}"
+	echo -e "${red}----------------Bienvenido a cryptoChecker (v1.3)---------------${end}"
 	echo -e "${red}                       _         _____ _               _             ${end}"
 	sleep 0.18
 	echo -e "${red}                      | |       / ____| |             | |            ${end}"
@@ -172,12 +184,12 @@ function printLogo(){
 
 function inspectCrypto(){
 	clear
-	echo -e "${red}----------------cryptoChecker (v1.2)----------------${end}"
+	echo -e "${red}----------------cryptoChecker (v1.3)----------------${end}"
 	echo -e "\n${blue}Introduce las criptomonedas separadas por un espacio"
 	echo -e "${red}----------------------------------------------------\n"
 	echo -ne "\t" && read -p "" currs; echo -ne "${end}"
 	clear
-	echo -e "${red}----------------cryptoChecker (v1.2)----------------${end}"
+	echo -e "${red}----------------cryptoChecker (v1.3)----------------${end}"
 	for cur in $currs; do
     	echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} $cur ${end}${gray}es de ${end}${green}$(eval echo \$$cur'_eur_price')€ / $(eval echo \$$cur'_usd_price')$ ${end}"
 	done
@@ -191,7 +203,7 @@ function inspectCrypto(){
 
 function info(){
 	clear
-    echo -e "${red}----------------cryptoChecker (v1.2)---------------${end}"
+    echo -e "${red}----------------cryptoChecker (v1.3)---------------${end}"
 	echo -e "\n https://github.com/m4riio21/cryptoChecker"
 	echo -e "\n${red} [*] Hecho por${end} m4riio21${red} & ${end}polespinasa"
 	sleep 0.5
@@ -212,7 +224,7 @@ function clock(){
 function error(){
 	clear
 	tput civis
-	echo -e "${red}----------------cryptoChecker (v1.2)---------------${end}"
+	echo -e "${red}----------------cryptoChecker (v1.3)---------------${end}"
 	echo -e "\n${red} [!] ERROR! Opción no válida${end}"
 	echo -ne "\n${blue} Volviendo al menu"; sleep 0.75; echo -ne "."; sleep 0.75; echo -ne "."; sleep 0.75; echo -ne ".";
 	mainMenu
@@ -221,11 +233,12 @@ function error(){
 #Main
 function mainMenu(){
 	clear
-	echo -e "${red}----------------cryptoChecker (v1.2)---------------${end}"
+	echo -e "${red}----------------cryptoChecker (v1.3)---------------${end}"
 	echo -e "\n${blue}Selecciona la opción deseada:${end}"
 	echo -e "${red}----------${end}"
 	echo -e "\n${blue} 1. Comprobar el precio de una/s criptomoneda/s en concreto${end}"
 	echo -e "${blue} 2. Comprobar el precio de todas las criptomonedas soportadas actualmente ${end}\n"
+	echo -e "${blue} 3. Visualizar la grafica de las criptomonedas soportadas actualmente ${end}\n"
 	echo -e "${red}----------${end}"
 	echo -e "\n${blue} 0. Acerca de${end}"
 	echo -e "${blue} S. Salir${end}"
@@ -235,6 +248,7 @@ function mainMenu(){
 		0) info;;
 		1) inspectCrypto;;
 		2) showAll;;
+		3) showGraph;;
 		S) ctrl_c;;
 		s) ctrl_c;;
 		*) error;;
