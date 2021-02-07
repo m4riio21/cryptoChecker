@@ -217,6 +217,7 @@ function error(){
 	mainMenu
 }
 
+#Main
 function mainMenu(){
 	clear
 	echo -e "${red}----------------cryptoChecker (v1.2)---------------${end}"
