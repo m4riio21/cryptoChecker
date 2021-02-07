@@ -149,7 +149,7 @@ function showGraph(){
 	echo -e "${red}----------------cryptoChecker (v1.3)---------------${end}"
 	echo -e "\n\n\n\t\t ${red} SELECCIONA LA MONEDA PARA VISUALIZAR LA GRAFICA"
 	echo -e "\n\t\t ${turquoise} 1.BTC   2.ETH   3.XRP   4.LTC${end}"
-	read crypto
+	echo -ne "\n\n${red}Opcion: ${end}${blue}" && read crypto
 	clear
 	python3 graph.py $crypto
 }
@@ -230,15 +230,69 @@ function error(){
 	mainMenu
 }
 
-#Main
+function menuRequisitos(){
+	clear
+	echo -e "${red}----------------cryptoChecker (v1.3)---------------${end}"
+	echo -e "\n\n\t${red}ASEGÚRESE QUE ESTA EN MODO ROOT PARA EJECUTAR LA INSTLACION DE REQUISITOS${end}"
+	echo -e "\n\t${turquoise} Si esta en modo ${red}ROOT${end}${turquoise} persione:${end}"
+	echo -e "\n\t\t${red} 1 -> Continuar con la instalacion${end}"
+	echo -e "\n\t\t${red} 2 -> Volver al menu${end}"
+	echo -e "\n\t\t${red} 3 -> Salir del script${end}"
+	echo -ne "\n\n${red}Opcion: ${end}${blue}" && read opcion
+	case $opcion in
+		1) instalacionRequisitos;;
+		2) mainMenu;;
+		3) ctrl_c;;
+		*) error;;
+	esac	
+}
+
+function instalacionRequisitos(){
+	clear
+	
+	if ! [ $(id -u) = 0 ]; then
+		echo -e "\n\t\t${red} NO ERES ROOT\n\n Porfavor reinicie el script en modo ROOT \n\nVolviendo al menu de requisitos${end}"; sleep 0.75; echo -ne "${red}.${end}"; sleep 0.75; echo -ne "${red}.${end}"; sleep 0.75; echo -ne "${red}.${end}";
+		sleep 0.5
+		menuRequisitos
+	fi
+
+	if dpkg -l python3 >/dev/null; then
+		echo -e "\n\t\t${green}Python3 ya esta instalado en este sistema${end}"
+	else
+		echo -e "\n\t\t${red}Python3 no esta instalado, se procedera a instalar${end}";sleep 1
+		apt-get install python3.6
+	fi
+	if dpkg -l python3-pip > /dev/null; then
+		echo -e "\n\t\t${green}Pip ya esta instalado en este sistema${end}"
+	else
+		echo -e "\n\t\t${red}Pip no esta instalado, se procedera a instalar${end}"; sleep 1
+		apt install python3-pip
+	fi
+	if pip show plotext > /dev/null; then
+		echo -e "\n\t\t${green}Plotext ya esta instalado en este sistema${end}"; sleep 2
+	else
+		echo -e "\n\t\t${red}Plotext no esta instalado, se procedera a instalar${end}";sleep 1
+		pip install plotext
+	fi
+	
+	clear
+	echo -e "\n\t\t${green} Todos los requerimientos han sido instalados correctamente. \n\n ${end}${turquoise} Si hubiera algun error se deben instalar manualmente las siguientes herramientas: ${end}${red}\t PYHTON3\t PIP\t PLOTEXT${end}"
+	echo -e "\n${blue} Pulsa una tecla para continuar..${end}"
+	read -s -n 1 key
+	mainMenu
+
+}
+
+#Mains
 function mainMenu(){
 	clear
 	echo -e "${red}----------------cryptoChecker (v1.3)---------------${end}"
 	echo -e "\n${blue}Selecciona la opción deseada:${end}"
 	echo -e "${red}----------${end}"
 	echo -e "\n${blue} 1. Comprobar el precio de una/s criptomoneda/s en concreto${end}"
-	echo -e "${blue} 2. Comprobar el precio de todas las criptomonedas soportadas actualmente ${end}\n"
-	echo -e "${blue} 3. Visualizar la grafica de las criptomonedas soportadas actualmente ${end}\n"
+	echo -e "${blue} 2. Comprobar el precio de todas las criptomonedas soportadas actualmente ${end}"
+	echo -e "${blue} 3. Visualizar la grafica de las criptomonedas soportadas actualmente ${end}"
+	echo -e "${blue} 4. Instalacion de requisitos ${end}\n"
 	echo -e "${red}----------${end}"
 	echo -e "\n${blue} 0. Acerca de${end}"
 	echo -e "${blue} S. Salir${end}"
@@ -249,6 +303,7 @@ function mainMenu(){
 		1) inspectCrypto;;
 		2) showAll;;
 		3) showGraph;;
+		4) menuRequisitos;;
 		S) ctrl_c;;
 		s) ctrl_c;;
 		*) error;;

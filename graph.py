@@ -21,7 +21,7 @@ def openFile(crypto):
 		lista_aux.append(lista[len(lista)-i-1])
 	return lista_aux
 
-def graficGeneration(lista):
+def graficGeneration(lista, cryptoCompleta, crypto):
 	#Generacion de la grafica plotext
 	plt.plot(lista)
 	plt.legend(["lines", "point"])
@@ -29,6 +29,7 @@ def graficGeneration(lista):
 	plt.canvas_color("none")
 	plt.axes_color("none")
 	plt.ticks_color("white")
+	plt.title("GRAFICA PRECIO " + cryptoCompleta + " - ULTIMOS 100 DIAS - " + crypto +"/USD")
 	plt.show()
 
 def cryptoSelect(moneda):
@@ -42,10 +43,21 @@ def cryptoSelect(moneda):
 
 	return switch.get(moneda)
 
+def getNomComplet(moneda):
+	switch = {
+		"ETH": "ETHEREUM",
+		"BTC": "BITCOIN",
+		"LTC": "LITLECOIN",
+		"XRP": "RIPPLE"
+	}
+
+	return switch.get(moneda)
+
 
 crypto=cryptoSelect(int(arg_final.moneda))
 
 
 datos=openFile(crypto)
 
-graficGeneration(datos)
+cryptoCompleta=getNomComplet(crypto)
+graficGeneration(datos, cryptoCompleta, crypto)
