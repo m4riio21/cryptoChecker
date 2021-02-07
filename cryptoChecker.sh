@@ -156,6 +156,7 @@ function printLogo(){
 	sleep 0.5
 	echo -e "\n${blue} Pulsa una tecla para continuar..${end}"
 	read -s -n 1 key
+
 	mainMenu
 }
 
