@@ -152,6 +152,12 @@ function showGraph(){
 	echo -ne "\n\n${red}Opcion: ${end}${blue}" && read crypto
 	clear
 	python3 graph.py $crypto
+	sleep 4
+	echo -e "\n${blue} Pulsa una tecla para continuar..${end}"
+	read -s -n 1 key
+
+	mainMenu
+
 }
 
 function printLogo(){
@@ -257,27 +263,30 @@ function instalacionRequisitos(){
 	fi
 
 	if dpkg -l python3 >/dev/null; then
-		echo -e "\n\t\t${green}Python3 ya esta instalado en este sistema${end}"
+		echo -e "\n\t\t${green}Python3 ya esta instalado en este sistema${end}"; sleep 2
 	else
 		echo -e "\n\t\t${red}Python3 no esta instalado, se procedera a instalar${end}";sleep 1
-		apt-get install python3.6
+		apt-get install python3.6 2>/dev/null
+		echo -ne "\t ${green}[V]${end}"
 	fi
 	if dpkg -l python3-pip > /dev/null; then
-		echo -e "\n\t\t${green}Pip ya esta instalado en este sistema${end}"
+		echo -e "\n\t\t${green}Pip ya esta instalado en este sistema${end}"; sleep 1
 	else
 		echo -e "\n\t\t${red}Pip no esta instalado, se procedera a instalar${end}"; sleep 1
-		apt install python3-pip
+		apt install python3-pip 2>/dev/null 2&>1
+		echo -ne "\t ${green}[V]${end}"
 	fi
-	if pip show plotext > /dev/null; then
-		echo -e "\n\t\t${green}Plotext ya esta instalado en este sistema${end}"; sleep 2
+	if python3 -m pip show plotext > /dev/null; then
+		echo -e "\n\t\t${green}Plotext ya esta instalado en este sistema${end}"; sleep 1
 	else
 		echo -e "\n\t\t${red}Plotext no esta instalado, se procedera a instalar${end}";sleep 1
-		pip install plotext
+		python3 -m pip install plotext >/dev/null 2&>1
+		echo -ne "\t ${green}[V]${end}"
 	fi
-	
+	sleep 3
 	clear
-	echo -e "\n\t\t${green} Todos los requerimientos han sido instalados correctamente. \n\n ${end}${turquoise} Si hubiera algun error se deben instalar manualmente las siguientes herramientas: ${end}${red}\t PYHTON3\t PIP\t PLOTEXT${end}"
-	echo -e "\n${blue} Pulsa una tecla para continuar..${end}"
+	echo -e "\n${green}  Todos los requerimientos han sido instalados correctamente.\n\n ${end}${turquoise} Si hubiera algun error se deben instalar manualmente las siguientes herramientas: ${end}${red}\t\t\t PYHTON3\t PIP\t PLOTEXT${end}"
+	echo -e "\n${blue}  Pulsa una tecla para continuar..${end}"
 	read -s -n 1 key
 	mainMenu
 
