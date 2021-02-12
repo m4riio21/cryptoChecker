@@ -2,6 +2,8 @@
 
 <img src="https://www.unicoindcx.com/img/unicoin-ethereum.png" width="1000">  
 
+<img src="https://img.shields.io/badge/Python-3-green.svg">
+
 ## Información ##
 * Herramienta para el seguimiento del precio de las principales criptomonedas en tiempo real
 
