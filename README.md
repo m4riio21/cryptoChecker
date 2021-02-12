@@ -1,4 +1,4 @@
-# cryptoChecker
+# ***CryptoChecker v1.3***
 
 <img src="https://www.unicoindcx.com/img/unicoin-ethereum.png" width="1000">  
 
