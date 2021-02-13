@@ -301,30 +301,21 @@ function instalacionRequisitos(){
 		menuRequisitos
 	fi
 
-	if dpkg -l python3 >/dev/null; then
-		echo -e "\n\t\t${green}Python3 ya esta instalado en este sistema${end}"; sleep 2
-	else
-		echo -e "\n\t\t${red}Python3 no esta instalado, se procedera a instalar${end}";sleep 1
-		apt-get install python3.6 2>/dev/null
-		echo -ne "\t ${green}[V]${end}"
-	fi
-	if dpkg -l python3-pip > /dev/null; then
-		echo -e "\n\t\t${green}Pip ya esta instalado en este sistema${end}"; sleep 1
-	else
-		echo -e "\n\t\t${red}Pip no esta instalado, se procedera a instalar${end}"; sleep 1
-		apt install python3-pip 2>/dev/null
-		echo -ne "\t ${green}[V]${end}"
-	fi
-	if python3 -m pip show plotext > /dev/null; then
-		echo -e "\n\t\t${green}Plotext ya esta instalado en este sistema${end}"; sleep 1
-	else
-		echo -e "\n\t\t${red}Plotext no esta instalado, se procedera a instalar${end}";sleep 1
-		python3 -m pip install plotext >/dev/null
-		echo -ne "\t ${green}[V]${end}"
-	fi
+	apt-get install python3.6 -s 2>/dev/null &
+	echo -ne "\t ${green}[V] python3 installed${end}"
+
+	apt install python3-pip -s >/dev/null &
+	echo -ne "\t ${green}[V] pip installed${end}"
+
+	python3 -m pip install plotext >/dev/null &
+	echo -ne "\t ${green}[V] plotext installed${end}"
+
+	apt-get install curl -s >/dev/null &
+	echo -ne "\t ${green}[V] curl installed${end}"
+
 	sleep 3
 	clear
-	echo -e "\n${green}  Todos los requerimientos han sido instalados correctamente.\n\n ${end}${turquoise} Si hubiera algun error se deben instalar manualmente las siguientes herramientas: ${end}${red}\t\t\t PYHTON3\t PIP\t PLOTEXT${end}"
+	echo -e "\n${green}  Todos los requerimientos han sido instalados correctamente.\n\n ${end}${turquoise} Si hubiera algun error se deben instalar manualmente las siguientes herramientas: ${end}${red}\t\t\t PYHTON3\t PIP\t PLOTEXT$\t CURL{end}"
 	echo -e "\n${blue}  Pulsa una tecla para continuar..${end}"
 	read -s -n 1 key
 	mainMenu
