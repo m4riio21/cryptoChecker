@@ -192,8 +192,6 @@ function showGraph(){
 	echo -ne "\n\n${red}Opcion: ${end}${blue}" && read crypto
 	clear
 	python3 graph.py $crypto
-	sleep 4
-	echo -e "\n${blue} Pulsa una tecla para continuar..${end}"
 	read -s -n 1 key
 
 	mainMenu
