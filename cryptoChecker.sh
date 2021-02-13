@@ -21,9 +21,6 @@ function ctrl_c(){
 	tput cnorm; exit 1
 }
 
-
-
-
 #Global variables (prices)
 
 function updateValues(){
@@ -39,9 +36,18 @@ BTC_eur_price=$(echo "scale=2 ; $BTC_usd_price / $USD_price" | bc)
 XRP_usd_price=$(curl -s "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=XRP-USDT" | tr ':' ' ' | awk -F' ' '{print $6}' | tr -d '"' | tr ',' ' ' | awk '{print $1}')
 XRP_eur_price=$(echo "scale=5 ; $XRP_usd_price / $USD_price" | bc | awk '{printf "%.5f\n", $0}')
 
-
 LTC_usd_price=$(curl -s "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=LTC-USDT" | tr ':' ' ' | awk -F' ' '{print $6}' | tr -d '"' | tr ',' ' ' | awk '{print $1}')
 LTC_eur_price=$(echo "scale=2 ; $LTC_usd_price / $USD_price" | bc)
+
+ADA_usd_price=$(curl -s "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=ADA-USDT" | tr ':' ' ' | awk -F' ' '{print $6}' | tr -d '"' | tr ',' ' ' | awk '{print $1}')
+ADA_eur_price=$(echo "scale=5 ; $ADA_usd_price / $USD_price" | bc | awk '{printf "%.5f\n", $0}')
+
+DOT_usd_price=$(curl -s "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=DOT-USDT" | tr ':' ' ' | awk -F' ' '{print $6}' | tr -d '"' | tr ',' ' ' | awk '{print $1}')
+DOT_eur_price=$(echo "scale=2 ; $DOT_usd_price / $USD_price" | bc)
+
+DOGE_usd_price=$(curl -s "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=DOGE-USDT" | tr ':' ' ' | awk -F' ' '{print $6}' | tr -d '"' | tr ',' ' ' | awk '{print $1}')
+DOGE_eur_price=$(echo "scale=5 ; $DOGE_usd_price / $USD_price" | bc | awk '{printf "%.5f\n", $0}')
+
 }
 
 function historicVales(){
@@ -50,7 +56,12 @@ function historicVales(){
 	curl -s "https://finance.yahoo.com/quote/ETH-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' > ETH_history.txt
 	curl -s "https://finance.yahoo.com/quote/LTC-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' > LTC_history.txt
 	curl -s "https://finance.yahoo.com/quote/XRP-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' > XRP_history.txt
+	curl -s "https://finance.yahoo.com/quote/ADA-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' > ADA_history.txt
+	curl -s "https://finance.yahoo.com/quote/DOT1-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' | tr -d '-' | tr -s ',' > DOT_history.txt
+	curl -s "https://finance.yahoo.com/quote/DOGE-USD/history/" | html2text | grep -w "Historical Prices" -A 200 | grep "Date" -A 100 | grep -v "Date" | awk -F' ' '{print $7}' | xargs | tr ' ' ',' > DOGE_history.txt
+	
 }
+
 
 #check values to select price color
 function price_color(){
@@ -94,7 +105,7 @@ function showAll(){
 	
 	#INICIALIZACION CRIPTOS PRIMERA VEZ
 	BTC_actual=$BTC_usd_price; ETH_actual=$ETH_usd_price; XRP_actual=$XRP_usd_price; LTC_actual=$LTC_usd_price
-
+	ADA_actual=$ADA_usd_price; DOT_actual=$DOT_usd_price
 	while [ $bucle -eq 0 ]; do
 		updateValues
 
@@ -130,6 +141,27 @@ function showAll(){
 		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} LTC ${end}${gray}es de ${end}${color_aux}$LTC_eur_price€ / $LTC_usd_price$ $arrowForm ${percent_aux}%${end}"
 		LTC_actual=$nuevo_aux
 
+		nuevo_aux=`echo "$ADA_usd_price"`
+		color_aux=$(price_color $nuevo_aux $ADA_actual)
+		arrowForm=$(arrow $color_aux)
+		percent_aux=$(percentageVariety nuevo_aux ADA_actual color_aux)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio de${end}${red} ADA ${end}${gray}es de ${end}${color_aux}$ADA_eur_price€ / $ADA_usd_price$ $arrowForm ${percent_aux}%${end}"
+		ADA_actual=$nuevo_aux
+
+		nuevo_aux=`echo "$DOT_usd_price"`
+		color_aux=$(price_color $nuevo_aux $DOT_actual)
+		arrowForm=$(arrow $color_aux)
+		percent_aux=$(percentageVariety nuevo_aux DOT_actual color_aux)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} DOT ${end}${gray}es de ${end}${color_aux}$DOT_eur_price€ / $DOT_usd_price$ $arrowForm ${percent_aux}%${end}"
+		DOT_actual=$nuevo_aux
+
+		nuevo_aux=`echo "$DOGE_usd_price"`
+		color_aux=$(price_color $nuevo_aux $DOGE_actual)
+		arrowForm=$(arrow $color_aux)
+		percent_aux=$(percentageVariety nuevo_aux DOGE_actual color_aux)
+		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} DOGE ${end}${gray}es de ${end}${color_aux}$DOGE_eur_price€ / $DOGE_usd_price$ $arrowForm ${percent_aux}%${end}"
+		DOGE_actual=$nuevo_aux
+
 		#CLOCK
 		echo -e "\n\t\t${turquoise}._______________________.${end}"
 		echo -ne "\t\t${turquoise}|\t\t\t|${end}"
@@ -148,7 +180,7 @@ function showGraph(){
 	clear
 	echo -e "${red}----------------cryptoChecker (v1.3)---------------${end}"
 	echo -e "\n\n\n\t\t ${red} SELECCIONA LA MONEDA PARA VISUALIZAR LA GRAFICA"
-	echo -e "\n\t\t ${turquoise} 1.BTC   2.ETH   3.XRP   4.LTC${end}"
+	echo -e "\n\t\t ${turquoise} 1.BTC   2.ETH   3.XRP   4.LTC   5. ADA   6. DOT   7.DOGE${end}"
 	echo -ne "\n\n${red}Opcion: ${end}${blue}" && read crypto
 	clear
 	python3 graph.py $crypto
@@ -273,14 +305,14 @@ function instalacionRequisitos(){
 		echo -e "\n\t\t${green}Pip ya esta instalado en este sistema${end}"; sleep 1
 	else
 		echo -e "\n\t\t${red}Pip no esta instalado, se procedera a instalar${end}"; sleep 1
-		apt install python3-pip 2>/dev/null 2&>1
+		apt install python3-pip 2>/dev/null
 		echo -ne "\t ${green}[V]${end}"
 	fi
 	if python3 -m pip show plotext > /dev/null; then
 		echo -e "\n\t\t${green}Plotext ya esta instalado en este sistema${end}"; sleep 1
 	else
 		echo -e "\n\t\t${red}Plotext no esta instalado, se procedera a instalar${end}";sleep 1
-		python3 -m pip install plotext >/dev/null 2&>1
+		python3 -m pip install plotext >/dev/null
 		echo -ne "\t ${green}[V]${end}"
 	fi
 	sleep 3
@@ -315,9 +347,10 @@ function mainMenu(){
 		4) menuRequisitos;;
 		S) ctrl_c;;
 		s) ctrl_c;;
-		*) error;;
+		*) error;;  
 	esac
 }
 
+rm *.txt 2>/dev/null
 historicVales
 printLogo

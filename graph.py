@@ -37,9 +37,11 @@ def cryptoSelect(moneda):
 		1: "BTC",
 		2: "ETH",
 		3: "XRP",
-		4: "LTC"
+		4: "LTC",
+		5: "ADA",
+		6: "DOT",
+		7: "DOGE"
 	}	
-
 
 	return switch.get(moneda)
 
@@ -48,14 +50,16 @@ def getNomComplet(moneda):
 		"ETH": "ETHEREUM",
 		"BTC": "BITCOIN",
 		"LTC": "LITLECOIN",
-		"XRP": "RIPPLE"
+		"XRP": "RIPPLE",
+		"ADA": "CARDANO",
+		"DOT": "POLKADOT",
+		"DOGE": "DOGECOIN"
 	}
 
 	return switch.get(moneda)
 
 
 crypto=cryptoSelect(int(arg_final.moneda))
-
 
 datos=openFile(crypto)
 
