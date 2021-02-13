@@ -93,11 +93,18 @@ function percentageVariety(){
 	actual="$2"
 	positive="$3"
 	if [ "$positive" = "$green" ]; then
-		result="+$(echo "scale=5; 100*$new/$actual-100" | bc)"
+		result="$(echo "scale=5; 100*$new/$actual-100" | bc)"
+		if [ "$result < 1" ]; then
+			result=$(echo "+0$result")
+		fi
 	elif [ "$positive" = "$red" ]; then
-		echo "-$(echo "scale=5; 100-$new*100/$actual" | bc)"
-	else echo "0"
+		result="$(echo "scale=5; 100-$new*100/$actual" | bc)"
+		if [ "$result < 1" ]; then
+			result=$(echo "-0$result")
+		fi
+	else result="0"
 	fi
+	echo $result
 }
 
 function showAll(){
@@ -116,51 +123,52 @@ function showAll(){
 		nuevo_aux=`echo "$BTC_usd_price"`
 		color_aux=$(price_color $nuevo_aux $BTC_actual)
 		arrowForm=$(arrow $color_aux)
-		percent_aux=$(percentageVariety nuevo_aux BTC_actual color_aux)
+		percent_aux=$(percentageVariety $nuevo_aux $BTC_actual $color_aux)
 		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} BTC ${end}${gray}es de ${end}${color_aux}$BTC_eur_price€ / $BTC_usd_price$ $arrowForm ${percent_aux}%${end}"
 		BTC_actual=$nuevo_aux
 
 		nuevo_aux=`echo "$ETH_usd_price"`
 		color_aux=$(price_color $nuevo_aux $ETH_actual)
 		arrowForm=$(arrow $color_aux)
-		percent_aux=$(percentageVariety nuevo_aux ETH_actual color_aux)
+		percent_aux=$(percentageVariety $nuevo_aux $ETH_actual $color_aux)
 		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} ETH ${end}${gray}es de ${end}${color_aux}$ETH_eur_price€ / $ETH_usd_price$ $arrowForm ${percent_aux}%${end}"
 		ETH_actual=$nuevo_aux
 
 		nuevo_aux=`echo "$XRP_usd_price"`
 		color_aux=$(price_color $nuevo_aux $XRP_actual)
 		arrowForm=$(arrow $color_aux)
-		percent_aux=$(percentageVariety nuevo_aux XRP_actual color_aux)
+		percent_aux=$(percentageVariety $nuevo_aux $XRP_actual $color_aux)
 		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} XRP ${end}${gray}es de ${end}${color_aux}$XRP_eur_price€ / $XRP_usd_price$ $arrowForm ${percent_aux}%${end}"
 		XRP_actual=$nuevo_aux
 
 		nuevo_aux=`echo "$LTC_usd_price"`
 		color_aux=$(price_color $nuevo_aux $LTC_actual)
 		arrowForm=$(arrow $color_aux)
-		percent_aux=$(percentageVariety nuevo_aux LTC_actual color_aux)
+		percent_aux=$(percentageVariety $nuevo_aux $LTC_actual $color_aux)
 		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} LTC ${end}${gray}es de ${end}${color_aux}$LTC_eur_price€ / $LTC_usd_price$ $arrowForm ${percent_aux}%${end}"
 		LTC_actual=$nuevo_aux
 
 		nuevo_aux=`echo "$ADA_usd_price"`
 		color_aux=$(price_color $nuevo_aux $ADA_actual)
 		arrowForm=$(arrow $color_aux)
-		percent_aux=$(percentageVariety nuevo_aux ADA_actual color_aux)
+		percent_aux=$(percentageVariety $nuevo_aux $ADA_actual $color_aux)
 		echo -e "\n\t${yellow}[*] ${end}${gray}El precio de${end}${red} ADA ${end}${gray}es de ${end}${color_aux}$ADA_eur_price€ / $ADA_usd_price$ $arrowForm ${percent_aux}%${end}"
 		ADA_actual=$nuevo_aux
 
 		nuevo_aux=`echo "$DOT_usd_price"`
 		color_aux=$(price_color $nuevo_aux $DOT_actual)
 		arrowForm=$(arrow $color_aux)
-		percent_aux=$(percentageVariety nuevo_aux DOT_actual color_aux)
+		percent_aux=$(percentageVariety $nuevo_aux $DOT_actual $color_aux)
 		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} DOT ${end}${gray}es de ${end}${color_aux}$DOT_eur_price€ / $DOT_usd_price$ $arrowForm ${percent_aux}%${end}"
 		DOT_actual=$nuevo_aux
 
 		nuevo_aux=`echo "$DOGE_usd_price"`
 		color_aux=$(price_color $nuevo_aux $DOGE_actual)
 		arrowForm=$(arrow $color_aux)
-		percent_aux=$(percentageVariety nuevo_aux DOGE_actual color_aux)
+		percent_aux=$(percentageVariety $nuevo_aux $DOGE_actual $color_aux)
 		echo -e "\n\t${yellow}[*] ${end}${gray}El precio del${end}${red} DOGE ${end}${gray}es de ${end}${color_aux}$DOGE_eur_price€ / $DOGE_usd_price$ $arrowForm ${percent_aux}%${end}"
 		DOGE_actual=$nuevo_aux
+
 
 		#CLOCK
 		echo -e "\n\t\t${turquoise}._______________________.${end}"
