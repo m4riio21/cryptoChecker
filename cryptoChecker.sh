@@ -221,6 +221,7 @@ function printLogo(){
 }
 
 function inspectCrypto(){
+	updateValues
 	clear
 	echo -e "${red}----------------cryptoChecker (v1.3)----------------${end}"
 	echo -e "\n${blue}Introduce las criptomonedas separadas por un espacio"
