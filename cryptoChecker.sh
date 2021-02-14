@@ -177,9 +177,10 @@ function showAll(){
 		echo -e "\n\t\t${turquoise}|${end}${gray}  $hora${end}${turquoise}\t|${end}"
 		echo -e "\t\t${turquoise}|\t\t\t|${end}"
 		echo -ne "\t\t${turquoise}·-----------------------·${end}"
-		
-		
 
+		echo -e "\n\n\t${blue} Pulsa ENTER volver al menu..${end}"; 
+		read -t 1 -p ""
+		[[ $? -ne 0 ]] || mainMenu
     done
 }
 
