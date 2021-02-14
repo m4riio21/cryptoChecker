@@ -1,6 +1,17 @@
 import plotext as plt
 import argparse as ar
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 argumento = ar.ArgumentParser()
 argumento.add_argument("moneda", help="introduce el valor assignado a cada moneda", type = str)
 
@@ -31,7 +42,7 @@ def graficGeneration(lista, cryptoCompleta, crypto):
 	plt.ticks_color("white")
 	plt.title("GRAFICA PRECIO " + cryptoCompleta + " - ULTIMOS 100 DIAS - " + crypto +"/USD")
 	plt.show()
-
+	print(bcolors.UNDERLINE+bcolors.BOLD+bcolors.OKCYAN+"Pulsa una tecla para volver al menu")
 def cryptoSelect(moneda):
 	switch = {
 		1: "BTC",
