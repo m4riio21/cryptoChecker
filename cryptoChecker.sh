@@ -52,13 +52,13 @@ DOGE_eur_price=$(echo "scale=5 ; $DOGE_usd_price / $USD_price" | bc | awk '{prin
 
 function historicVales(){
 
-	curl -s "https://finance.yahoo.com/quote/BTC-USD/history/" | html2text | grep -w "Historical Prices" -A 205 | grep "^[A-Z]" | tail -100 | awk -F' ' '{print $6}' | tr -d ',' | xargs | tr ' ' ',' > BTC_history.txt
-	curl -s "https://finance.yahoo.com/quote/ETH-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' > ETH_history.txt
-	curl -s "https://finance.yahoo.com/quote/LTC-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' > LTC_history.txt
-	curl -s "https://finance.yahoo.com/quote/XRP-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' > XRP_history.txt
-	curl -s "https://finance.yahoo.com/quote/ADA-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' > ADA_history.txt
+	curl -s "https://finance.yahoo.com/quote/BTC-USD/history/" | html2text | grep -w "Historical Prices" -A 205 | grep "^[A-Z]" | tail -100 | awk -F' ' '{print $6}' | tr -d ',' | xargs | tr ' ' ',' | tr -d '-' | tr -s ',' > BTC_history.txt
+	curl -s "https://finance.yahoo.com/quote/ETH-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' | tr -d '-' | tr -s ',' > ETH_history.txt
+	curl -s "https://finance.yahoo.com/quote/LTC-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' | tr -d '-' | tr -s ',' > LTC_history.txt
+	curl -s "https://finance.yahoo.com/quote/XRP-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' | tr -d '-' | tr -s ',' > XRP_history.txt
+	curl -s "https://finance.yahoo.com/quote/ADA-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' | tr -d '-' | tr -s ',' > ADA_history.txt
 	curl -s "https://finance.yahoo.com/quote/DOT1-USD/history/" | html2text | grep -w "Historical Prices" -A 105 | tail -100 | awk -F' ' '{print $8}' | tr -d ',' | xargs | tr ' ' ',' | tr -d '-' | tr -s ',' > DOT_history.txt
-	curl -s "https://finance.yahoo.com/quote/DOGE-USD/history/" | html2text | grep -w "Historical Prices" -A 200 | grep "Date" -A 100 | grep -v "Date" | awk -F' ' '{print $7}' | xargs | tr ' ' ',' > DOGE_history.txt
+	curl -s "https://finance.yahoo.com/quote/DOGE-USD/history/" | html2text | grep -w "Historical Prices" -A 200 | grep "Date" -A 100 | grep -v "Date" | awk -F' ' '{print $7}' | xargs | tr ' ' ',' | tr -d '-' | tr -s ',' > DOGE_history.txt
 	
 }
 
@@ -172,10 +172,10 @@ function showAll(){
 
 		#CLOCK
 		echo -e "\n\t\t${turquoise}._______________________.${end}"
-		echo -ne "\t\t${turquoise}|\t\t\t|${end}"
+		echo -ne "\t\t${turquoise}|\t\t\t |${end}"
 		echo -ne "\n\t\t${turquoise}| Hora de actualizacion |${end}"
-		echo -e "\n\t\t${turquoise}|${end}${gray}  $hora${end}${turquoise}\t|${end}"
-		echo -e "\t\t${turquoise}|\t\t\t|${end}"
+		echo -e "\n\t\t${turquoise}|${end}${gray}  $hora${end}${turquoise}    |${end}"
+		echo -e "\t\t${turquoise}|\t\t\t |${end}"
 		echo -ne "\t\t${turquoise}·-----------------------·${end}"
 
 		echo -e "\n\n\t${blue} Pulsa ENTER volver al menu..${end}"; 
@@ -190,7 +190,7 @@ function showGraph(){
 	echo -e "${red}----------------cryptoChecker (v1.3)---------------${end}"
 	echo -e "\n\n\n\t\t ${red} SELECCIONA LA MONEDA PARA VISUALIZAR LA GRAFICA"
 	echo -e "\n\t\t ${turquoise} 1.BTC   2.ETH   3.XRP   4.LTC   5. ADA   6. DOT   7.DOGE${end}"
-	echo -ne "\n\n${red}Opcion: ${end}${blue}" && read crypto
+	echo -ne "\n\n${red}Opcion: ${end}${blue}" && read -p " " -n10 -e crypto
 	clear
 	python3 graph.py $crypto
 	read -s -n 1 key
@@ -284,7 +284,7 @@ function menuRequisitos(){
 	echo -e "\n\t\t${red} 1 -> Continuar con la instalacion${end}"
 	echo -e "\n\t\t${red} 2 -> Volver al menu${end}"
 	echo -e "\n\t\t${red} 3 -> Salir del script${end}"
-	echo -ne "\n\n${red}Opcion: ${end}${blue}" && read opcion
+	echo -ne "\n\n${red}Opcion: ${end}${blue}" && read -p " " -n10 -e opcion
 	case $opcion in
 		1) instalacionRequisitos;;
 		2) mainMenu;;
@@ -336,7 +336,7 @@ function mainMenu(){
 	echo -e "${red}----------${end}"
 	echo -e "\n${blue} 0. Acerca de${end}"
 	echo -e "${blue} S. Salir${end}"
-	echo -ne "\n\n${red}Opcion: ${end}${blue}" && read opcion
+	echo -ne "\n\n${red}Opcion:${end}${blue}" && read -p " " -n10 -e opcion
 	echo -e "${end}"
 	case $opcion in
 		0) info;;
